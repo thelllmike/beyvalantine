@@ -1,65 +1,120 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getUser } from "@/lib/auth";
 
-export default function Home() {
+export default async function HomePage() {
+  const user = await getUser();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 py-12">
+      {/* Hero Section */}
+      <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-6xl mb-6 animate-bounce">💕</div>
+        <h1 className="text-5xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-pink-600 via-rose-500 to-red-500 bg-clip-text text-transparent">
+          Create Your Perfect Valentine
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          Design a personalized Valentine&apos;s Day card with cute teddy bears,
+          heartfelt messages, and share it with your special someone. Will they
+          say yes? 💝
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href={user ? "/builder" : "/login"}
+            className="px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+          >
+            Create Your Valentine Page ❤️
+          </Link>
+          <Link
+            href="/examples"
+            className="px-8 py-4 text-lg font-semibold text-pink-600 border-2 border-pink-300 rounded-2xl hover:bg-pink-50 transition-all duration-200"
+          >
+            View Examples ✨
+          </Link>
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-100 card-hover">
+          <div className="text-4xl mb-4">🧸</div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Choose Your Teddy
+          </h3>
+          <p className="text-gray-600">
+            Pick from our adorable collection of 12 cute teddy bears to
+            personalize your card.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-100 card-hover">
+          <div className="text-4xl mb-4">💌</div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Write Your Message
+          </h3>
+          <p className="text-gray-600">
+            Express your feelings with a heartfelt message up to 300 characters
+            long.
+          </p>
         </div>
-      </main>
+
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-100 card-hover">
+          <div className="text-4xl mb-4">🔗</div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Share the Love
+          </h3>
+          <p className="text-gray-600">
+            Get a unique link to share with your valentine and wait for their
+            answer!
+          </p>
+        </div>
+      </div>
+
+      {/* How it works */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 max-w-4xl mx-auto shadow-xl border border-pink-100">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+          How It Works 💫
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+              1
+            </div>
+            <h4 className="font-semibold text-gray-800 mb-1">Sign Up</h4>
+            <p className="text-sm text-gray-600">Create your free account</p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+              2
+            </div>
+            <h4 className="font-semibold text-gray-800 mb-1">Design</h4>
+            <p className="text-sm text-gray-600">Customize your card</p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+              3
+            </div>
+            <h4 className="font-semibold text-gray-800 mb-1">Share</h4>
+            <p className="text-sm text-gray-600">Send the link</p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+              4
+            </div>
+            <h4 className="font-semibold text-gray-800 mb-1">Celebrate!</h4>
+            <p className="text-sm text-gray-600">Watch the magic happen 🎉</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="mt-16 text-center text-gray-500 text-sm">
+        <p>Made with 💕 for Valentine&apos;s Day 2024</p>
+      </footer>
     </div>
   );
 }
