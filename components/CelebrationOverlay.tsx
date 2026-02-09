@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface CelebrationOverlayProps {
     isActive: boolean;
@@ -16,7 +16,9 @@ export default function CelebrationOverlay({
     onClose,
 }: CelebrationOverlayProps) {
     const [showMessage, setShowMessage] = useState(false);
-    const [showShareOptions, setShowShareOptions] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [imageSaved, setImageSaved] = useState(false);
+    const storyCardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isActive) {
@@ -24,68 +26,65 @@ export default function CelebrationOverlay({
             return () => clearTimeout(timer);
         } else {
             setShowMessage(false);
-            setShowShareOptions(false);
+            setImageSaved(false);
         }
     }, [isActive]);
 
-    // Share to Instagram Story - NGL style
-    const handleInstagramShare = async () => {
-        const shareText = creatorName
-            ? `💕 I said YES to ${creatorName}! Happy Valentine's Day! 🥰`
-            : `💕 I said YES! Happy Valentine's Day! 🥰`;
+    // Generate and save story image, then open Instagram
+    const handleShareToStory = async () => {
+        setIsGenerating(true);
 
-        // Copy the celebration message
         try {
-            await navigator.clipboard.writeText(shareText + "\n\n💝 Create yours: " + window.location.origin);
-        } catch (e) {
-            console.log("Copy failed", e);
-        }
+            // Dynamically import html2canvas
+            const html2canvas = (await import("html2canvas")).default;
 
-        // Try to open Instagram
-        const instagramUrl = "instagram://story-camera";
-        window.location.href = instagramUrl;
-
-        // Fallback message after attempt
-        setTimeout(() => {
-            alert(
-                "📋 Text copied!\n\n" +
-                "Share to Instagram Story:\n" +
-                "1. Open Instagram → Create Story\n" +
-                "2. Add a background\n" +
-                "3. Add Text sticker & paste!\n" +
-                "4. Share your YES! 💕"
-            );
-        }, 500);
-    };
-
-    // Native Share
-    const handleNativeShare = async () => {
-        const shareText = creatorName
-            ? `💕 I said YES to ${creatorName}! Happy Valentine's Day! 🥰`
-            : `💕 I said YES! Happy Valentine's Day! 🥰`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: "💕 I said YES!",
-                    text: shareText,
-                    url: window.location.origin,
+            if (storyCardRef.current) {
+                const canvas = await html2canvas(storyCardRef.current, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
                 });
-            } catch (err) {
-                console.log("Share cancelled", err);
-            }
-        } else {
-            handleInstagramShare();
-        }
-    };
 
-    // WhatsApp Share
-    const handleWhatsAppShare = () => {
-        const text = creatorName
-            ? `💕 I said YES to ${creatorName}! Happy Valentine's Day! 🥰 Create yours: ${window.location.origin}`
-            : `💕 I said YES! Happy Valentine's Day! 🥰 Create yours: ${window.location.origin}`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-        window.open(whatsappUrl, "_blank");
+                // Convert to blob and download
+                canvas.toBlob(async (blob) => {
+                    if (blob) {
+                        // Create download link
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `valentine-${partnerName.replace(/\s+/g, "-")}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+
+                        setImageSaved(true);
+
+                        // Wait a moment then try to open Instagram
+                        setTimeout(() => {
+                            // Try to open Instagram app
+                            window.location.href = "instagram://story-camera";
+
+                            // Fallback - show instructions after a delay
+                            setTimeout(() => {
+                                alert(
+                                    "✅ Image saved to your device!\n\n" +
+                                    "Now open Instagram and:\n" +
+                                    "1. Create a new Story\n" +
+                                    "2. Select the saved image from gallery\n" +
+                                    "3. Share it! 💕"
+                                );
+                            }, 1000);
+                        }, 500);
+                    }
+                }, "image/png");
+            }
+        } catch (error) {
+            console.error("Error generating image:", error);
+            alert("Could not generate image. Please try again.");
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     if (!isActive) return null;
@@ -163,6 +162,44 @@ export default function CelebrationOverlay({
                 ))}
             </div>
 
+            {/* Hidden Story Card for Screenshot - inline styles for html2canvas */}
+            <div style={{ position: "fixed", left: "-9999px", top: 0 }}>
+                <div
+                    ref={storyCardRef}
+                    style={{
+                        width: "1080px",
+                        height: "1920px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "64px",
+                        background: "linear-gradient(135deg, #ff6b9d 0%, #ff4757 50%, #ff1493 100%)",
+                        position: "relative",
+                    }}
+                >
+                    <div style={{ fontSize: "120px", marginBottom: "32px" }}>💕</div>
+                    <div style={{ textAlign: "center", color: "#ffffff" }}>
+                        <p style={{ fontSize: "80px", fontWeight: "bold", marginBottom: "32px", margin: 0 }}>I said YES!</p>
+                        <p style={{ fontSize: "50px", marginBottom: "48px", margin: "32px 0" }}>
+                            {creatorName
+                                ? `${partnerName} & ${creatorName}`
+                                : partnerName
+                            }
+                        </p>
+                        <p style={{ fontSize: "60px", margin: 0 }}>🥰💘🌹</p>
+                    </div>
+                    <div style={{
+                        position: "absolute",
+                        bottom: "80px",
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: "36px"
+                    }}>
+                        Happy Valentine&apos;s Day 2025
+                    </div>
+                </div>
+            </div>
+
             {/* Message Card */}
             <div
                 className={`
@@ -187,61 +224,39 @@ export default function CelebrationOverlay({
                 )}
                 <p className="text-2xl mt-3">🥰💘🌹</p>
 
-                {/* Share Section - NGL Style */}
-                {!showShareOptions ? (
-                    <div className="mt-6 space-y-3">
-                        <button
-                            onClick={() => setShowShareOptions(true)}
-                            className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg"
-                        >
-                            📸 Share to Story!
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="w-full px-6 py-2 text-pink-500 font-medium hover:text-pink-600 transition-colors"
-                        >
-                            Celebrate Again! 🎊
-                        </button>
-                    </div>
-                ) : (
-                    <div className="mt-6 space-y-3">
-                        <p className="text-sm text-gray-500 mb-2">Share your YES! 💕</p>
+                {/* Share to Instagram Story Button */}
+                <div className="mt-6 space-y-3">
+                    <button
+                        onClick={handleShareToStory}
+                        disabled={isGenerating}
+                        className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-xl font-bold text-lg hover:opacity-90 transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                        {isGenerating ? (
+                            <>
+                                <span className="animate-spin">⏳</span> Creating Story...
+                            </>
+                        ) : imageSaved ? (
+                            <>
+                                ✅ Image Saved! Open Instagram
+                            </>
+                        ) : (
+                            <>
+                                📸 Share to Instagram Story
+                            </>
+                        )}
+                    </button>
 
-                        {/* Share Buttons Grid */}
-                        <div className="grid grid-cols-3 gap-2">
-                            <button
-                                onClick={handleInstagramShare}
-                                className="flex flex-col items-center justify-center gap-1 p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white rounded-xl hover:opacity-90 transition-opacity"
-                            >
-                                <span className="text-xl">📸</span>
-                                <span className="text-xs">Instagram</span>
-                            </button>
+                    <p className="text-xs text-gray-400">
+                        Saves image → Opens Instagram → Share to Story!
+                    </p>
 
-                            <button
-                                onClick={handleWhatsAppShare}
-                                className="flex flex-col items-center justify-center gap-1 p-3 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl hover:opacity-90 transition-opacity"
-                            >
-                                <span className="text-xl">💬</span>
-                                <span className="text-xs">WhatsApp</span>
-                            </button>
-
-                            <button
-                                onClick={handleNativeShare}
-                                className="flex flex-col items-center justify-center gap-1 p-3 bg-gradient-to-br from-pink-400 to-rose-500 text-white rounded-xl hover:opacity-90 transition-opacity"
-                            >
-                                <span className="text-xl">🚀</span>
-                                <span className="text-xs">More</span>
-                            </button>
-                        </div>
-
-                        <button
-                            onClick={() => setShowShareOptions(false)}
-                            className="w-full px-6 py-2 text-gray-400 text-sm hover:text-gray-600 transition-colors"
-                        >
-                            ← Back
-                        </button>
-                    </div>
-                )}
+                    <button
+                        onClick={onClose}
+                        className="w-full px-6 py-2 text-pink-500 font-medium hover:text-pink-600 transition-colors"
+                    >
+                        Celebrate Again! 🎊
+                    </button>
+                </div>
             </div>
         </div>
     );
