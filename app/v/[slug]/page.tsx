@@ -34,52 +34,52 @@ export default async function PublicViewPage({ params }: PageProps) {
     const teddy = getTeddyByKey(card.teddy_key);
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12">
-            <div className="w-full max-w-lg">
-                <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 rounded-3xl p-8 shadow-2xl border border-pink-200">
+        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8 overflow-hidden">
+            <div className="w-full max-w-xl sm:max-w-2xl">
+                <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 md:p-10 shadow-2xl border-2 border-pink-200">
                     {/* Header */}
-                    <div className="text-center mb-6">
-                        <div className="inline-block px-6 py-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full">
-                            <span className="text-white font-semibold">
+                    <div className="text-center mb-5 sm:mb-8">
+                        <div className="inline-block px-4 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg">
+                            <span className="text-white text-base sm:text-xl font-bold">
                                 Will you be my Valentine? 💕
                             </span>
                         </div>
                     </div>
 
-                    {/* Teddy Image */}
-                    <div className="relative w-40 h-40 mx-auto mb-6">
+                    {/* Teddy Image - Responsive */}
+                    <div className="relative w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 mx-auto mb-5 sm:mb-8">
                         {teddy ? (
-                            <Image
-                                src={teddy.src}
-                                alt={teddy.name}
-                                fill
-                                className="object-contain drop-shadow-xl"
-                                priority
-                                unoptimized
-                            />
+                            <>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={teddy.src}
+                                    alt={teddy.name}
+                                    className="w-full h-full object-contain drop-shadow-2xl"
+                                />
+                            </>
                         ) : (
                             <div className="w-full h-full bg-pink-100 rounded-full flex items-center justify-center">
-                                <span className="text-6xl">🧸</span>
+                                <span className="text-6xl sm:text-8xl">🧸</span>
                             </div>
                         )}
                     </div>
 
-                    {/* Partner Name */}
-                    <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
+                    {/* Partner Name - Responsive */}
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-center text-gray-800 mb-4 sm:mb-6">
                         Dear {card.partner_name},
                     </h1>
 
-                    {/* Message */}
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 mb-6">
-                        <p className="text-gray-700 text-lg text-center whitespace-pre-wrap leading-relaxed">
+                    {/* Message - Responsive */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-5 sm:mb-8 shadow-inner">
+                        <p className="text-gray-700 text-base sm:text-xl md:text-2xl text-center whitespace-pre-wrap leading-relaxed">
                             {card.message}
                         </p>
                     </div>
 
                     {/* Creator Name */}
                     {card.creator_name && (
-                        <p className="text-center text-gray-600 mb-6">
-                            With love, <span className="font-bold text-pink-600">{card.creator_name}</span> 💝
+                        <p className="text-center text-gray-600 text-sm sm:text-lg mb-5 sm:mb-8">
+                            With love, <span className="font-bold text-pink-600 text-base sm:text-xl">{card.creator_name}</span> 💝
                         </p>
                     )}
 
