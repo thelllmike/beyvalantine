@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser";
 import { registerSchema } from "@/lib/validation";
@@ -9,7 +8,6 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 
 export default function RegisterPage() {
-    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,6 +18,7 @@ export default function RegisterPage() {
     }>({});
     const [generalError, setGeneralError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,14 +57,55 @@ export default function RegisterPage() {
                 return;
             }
 
-            router.push("/builder");
-            router.refresh();
+            // Show confirmation popup instead of redirecting
+            setShowConfirmation(true);
         } catch {
             setGeneralError("An unexpected error occurred. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Confirmation popup
+    if (showConfirmation) {
+        return (
+            <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12">
+                <div className="w-full max-w-md">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-100 text-center">
+                        <div className="text-6xl mb-6">📧</div>
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent mb-4">
+                            Check Your Email!
+                        </h1>
+                        <p className="text-gray-600 mb-6">
+                            We&apos;ve sent a confirmation link to{" "}
+                            <span className="font-semibold text-pink-600">{email}</span>
+                        </p>
+                        <div className="bg-pink-50 rounded-xl p-4 mb-6 border border-pink-200">
+                            <p className="text-sm text-gray-600">
+                                📌 Please check your inbox and click the confirmation link to activate your account.
+                            </p>
+                        </div>
+                        <p className="text-gray-500 text-sm mb-6">
+                            Didn&apos;t receive the email? Check your spam folder.
+                        </p>
+                        <div className="space-y-3">
+                            <Link href="/login">
+                                <Button className="w-full" variant="primary">
+                                    Go to Login 💕
+                                </Button>
+                            </Link>
+                            <button
+                                onClick={() => setShowConfirmation(false)}
+                                className="text-pink-500 text-sm hover:text-pink-600"
+                            >
+                                ← Back to Register
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12">

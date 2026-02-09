@@ -113,7 +113,7 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer className="mt-16 text-center text-gray-500 text-sm">
-        <p>Made with 💕 for Valentine&apos;s Day 2024</p>
+        <p>Made with 💕 for Valentine&apos;s Day 2026</p>
       </footer>
     </div>
   );
